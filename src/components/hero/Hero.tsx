@@ -69,9 +69,9 @@ export function Hero() {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="font-hero text-5xl font-bold uppercase tracking-tighter md:text-6xl lg:text-7xl"
         >
-          We always find the <br />
-          <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent">
-            Right Angle.
+          Systems... with a <br />
+          <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent italic">
+            SINE of LIFE.
           </span>
         </motion.h1>
 
