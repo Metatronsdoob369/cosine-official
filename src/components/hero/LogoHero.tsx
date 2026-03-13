@@ -3,9 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-export function LogoHero() {
+export function LogoHero({ isActive = true }: { isActive?: boolean }) {
   return (
-    <div className="relative flex flex-col items-center justify-center py-20 pointer-events-none">
+    <div className={`relative flex flex-col items-center justify-center py-20 pointer-events-none transition-all duration-1000 ${isActive ? 'opacity-100' : 'opacity-40 grayscale'}`}>
       {/* Container for the "Tactical Chip" Logo */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -55,7 +55,7 @@ export function LogoHero() {
               stroke="#8effa6"
               strokeWidth="2"
               strokeDasharray="40 200"
-              animate={{ strokeDashoffset: [438, 0] }}
+              animate={isActive ? { strokeDashoffset: [438, 0] } : {}}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               filter="url(#mintGlow)"
             />
@@ -72,7 +72,7 @@ export function LogoHero() {
                 stroke="#8effa6"
                 strokeWidth="2"
                 strokeDasharray="30 150"
-                animate={{ strokeDashoffset: [400, 0] }}
+                animate={isActive ? { strokeDashoffset: [400, 0] } : {}}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 filter="url(#mintGlow)"
                 opacity="0.6"
@@ -91,7 +91,7 @@ export function LogoHero() {
               stroke="#8effa6"
               strokeWidth="2"
               strokeDasharray="50 250"
-              animate={{ strokeDashoffset: [0, 438] }}
+              animate={isActive ? { strokeDashoffset: [0, 438] } : {}}
               transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
               filter="url(#mintGlow)"
             />
@@ -108,7 +108,7 @@ export function LogoHero() {
                 stroke="#8effa6"
                 strokeWidth="2"
                 strokeDasharray="20 100"
-                animate={{ strokeDashoffset: [0, 300] }}
+                animate={isActive ? { strokeDashoffset: [0, 300] } : {}}
                 transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
                 filter="url(#mintGlow)"
                 opacity="0.5"
@@ -178,7 +178,7 @@ export function LogoHero() {
             fill="#ff8c42"
             textAnchor="middle"
             alignmentBaseline="middle"
-            className="animate-pulse"
+            className={isActive ? "animate-pulse" : ""}
           >
             +
           </text>

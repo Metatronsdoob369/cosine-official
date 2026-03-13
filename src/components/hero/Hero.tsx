@@ -8,6 +8,7 @@ import { LogoHero } from "./LogoHero";
 
 export function Hero() {
   const [isArmed, setIsArmed] = useState(false);
+  const [isSystemActive, setIsSystemActive] = useState(false);
   const [targetPayload, setTargetPayload] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
   const [terminalOutput, setTerminalOutput] = useState<string[]>([
@@ -15,11 +16,25 @@ export function Hero() {
     "[ SYSTEM ]: GOVERNANCE STATUS -> SAFE (READ-ONLY)",
   ]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsSystemActive(true);
+      } else {
+        setIsSystemActive(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleArmToggle = () => {
-    setIsArmed(!isArmed);
+    const newState = !isArmed;
+    setIsArmed(newState);
+    if (newState) setIsSystemActive(true);
     setTerminalOutput((prev) => [
       ...prev,
-      `[ SYS_OP ]: STATE MUTATED -> ${!isArmed ? "ARMED (LIVE)" : "SAFE"}`,
+      `[ SYS_OP ]: STATE MUTATED -> ${newState ? "ARMED (LIVE)" : "SAFE"}`,
     ]);
   };
 
@@ -43,25 +58,35 @@ export function Hero() {
   };
 
   return (
-    <section className="relative flex min-h-[140vh] w-full flex-col items-center pt-32 overflow-hidden px-4">
+    <section className="relative flex min-h-[120vh] w-full flex-col items-center pt-24 overflow-hidden px-4">
       {/* Hero Content */}
-      <div className="z-10 flex w-full max-w-5xl flex-col items-center gap-12 text-center text-white">
+      <div className="z-10 flex w-full max-w-6xl flex-col items-center text-center text-white">
         
-        {/* Massive Brand Focal Point */}
-        <LogoHero />
+        {/* Systems Quad (Top Left Symmetric) - Modern, Clean Font */}
+        <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full flex justify-start mb-4 px-12"
+        >
+            <span className="font-mono text-sm tracking-[0.4em] text-neutral-500 uppercase">
+                SYSTEMS
+            </span>
+        </motion.div>
+
+        {/* Brand Focal Point (Dormant-to-Active) */}
+        <LogoHero isActive={isSystemActive} />
 
         {/* Headline with cinematic spacing */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="font-hero text-6xl font-bold uppercase tracking-tighter md:text-7xl lg:text-8xl mt-12"
+        <motion.div
+          animate={{ opacity: isSystemActive ? 1 : 0, y: isSystemActive ? 0 : 20 }}
+          transition={{ duration: 0.8 }}
+          className="font-hero text-6xl font-bold uppercase tracking-tighter md:text-7xl lg:text-8xl mt-4"
         >
-          Systems... with a <br />
+          with a <br />
           <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent italic">
             SINE of LIFE.
           </span>
-        </motion.h1>
+        </motion.div>
 
         {/* Subheadline with rewarding hover */}
         <motion.div
