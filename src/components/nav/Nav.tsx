@@ -60,6 +60,7 @@ export function Nav() {
           <DecodeLink href="#">ARCHITECTURE</DecodeLink>
           <DecodeLink href="#">SYSTEMS</DecodeLink>
           <DecodeLink href="#">NODES</DecodeLink>
+          <DecodeLink href="/racing">SARN</DecodeLink>
           <div className="scale-[0.85] origin-right">
              <InitializeButton />
           </div>
@@ -87,6 +88,7 @@ export function Nav() {
               <a href="#" className="font-mono text-sm tracking-widest text-neutral-400 hover:text-[#8effa6]">ARCHITECTURE</a>
               <a href="#" className="font-mono text-sm tracking-widest text-neutral-400 hover:text-[#8effa6]">SYSTEMS</a>
               <a href="#" className="font-mono text-sm tracking-widest text-neutral-400 hover:text-[#8effa6]">NODES</a>
+              <a href="/racing" className="font-mono text-sm tracking-widest text-[#ff8c42] hover:text-[#ff8c42]/80">SARN</a>
             </div>
           </motion.div>
         )}
