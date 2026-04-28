@@ -7,14 +7,17 @@ import { ProjectGallery } from "@/components/gallery/ProjectGallery";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center pt-20 text-white relative">
+    <main className="flex min-h-screen flex-col items-center text-white relative">
       {/* 
-        Phase 2: The Tactical Shell & Juice
-        1. The Interactive Hero with N8N Payload Trigger
-        2. Live Payload Demo (Telegram Workflow)
-        3. The Architecture Zoom-Scroll 
+        The Cold Open — SYSTEMS + dormant chip
+        First scroll triggers "with a SINE of LIFE" and activates the node
       */}
       <Hero />
+
+      {/* 
+        Phase 2: The Tactical Shell & Juice
+        Payload Demo and Architecture — kept for depth below the hero
+      */}
       <LivePayloadDemo />
       <ArchitectureScroll />
 

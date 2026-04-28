@@ -1,207 +1,153 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Shield, ShieldAlert, Cpu } from "lucide-react";
-import { ReflectiveButton } from "../ui/ReflectiveButton";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { LogoHero } from "./LogoHero";
 
 export function Hero() {
-  const [isArmed, setIsArmed] = useState(false);
-  const [isSystemActive, setIsSystemActive] = useState(false);
-  const [targetPayload, setTargetPayload] = useState("");
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [terminalOutput, setTerminalOutput] = useState<string[]>([
-    "[ SYSTEM ]: DOMICILE LOCAL NODE INITIALIZED",
-    "[ SYSTEM ]: GOVERNANCE STATUS -> SAFE (READ-ONLY)",
-  ]);
+  const [isActive, setIsActive] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll position for the activation trigger
+  const { scrollY } = useScroll();
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setIsSystemActive(true);
-      } else {
-        setIsSystemActive(false);
+    const unsubscribe = scrollY.on("change", (latest) => {
+      // Activate at 80px of scroll — the first intentional scroll
+      if (latest > 80 && !isActive) {
+        setIsActive(true);
       }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleArmToggle = () => {
-    const newState = !isArmed;
-    setIsArmed(newState);
-    if (newState) setIsSystemActive(true);
-    setTerminalOutput((prev) => [
-      ...prev,
-      `[ SYS_OP ]: STATE MUTATED -> ${newState ? "ARMED (LIVE)" : "SAFE"}`,
-    ]);
-  };
-
-  const handleDeploy = () => {
-    if (!targetPayload) return;
-    setIsDeploying(true);
-    setTerminalOutput((prev) => [
-      ...prev,
-      `[ N8N_HOOK ]: INITIATING PAYLOAD SEQUENCE TO: ${targetPayload}...`,
-    ]);
-
-    // Simulate n8n webhook delay
-    setTimeout(() => {
-      setTerminalOutput((prev) => [
-        ...prev,
-        `[ SUCCESS ]: PAYLOAD DELIVERED. AWAITING RESPONSE...`,
-      ]);
-      setTargetPayload("");
-      setIsDeploying(false);
-    }, 1500);
-  };
+      // Deactivate if they scroll back to the very top
+      if (latest < 20) {
+        setIsActive(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [scrollY, isActive]);
 
   return (
-    <section className="relative flex min-h-[120vh] w-full flex-col items-center pt-24 overflow-hidden px-4">
-      {/* Hero Content */}
-      <div className="z-10 flex w-full max-w-6xl flex-col items-center text-center text-white">
+    <section
+      ref={heroRef}
+      className="relative flex min-h-[140vh] w-full flex-col items-center justify-start overflow-hidden px-4"
+    >
+      {/* ── Cold Open: SYSTEMS ── */}
+      <div className="flex w-full max-w-6xl flex-col items-center text-center pt-[15vh]">
         
-        {/* Systems Quad (Top Left Symmetric) - Modern, Clean Font */}
-        <div className="w-full flex justify-between items-start mb-8 px-8">
-            <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex flex-col items-start gap-1"
+        {/* Top-left system label — always visible */}
+        <div className="w-full flex justify-between items-start mb-4 px-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
+            className="flex flex-col items-start gap-1"
+          >
+            <span className="font-mono text-[10px] tracking-[0.5em] text-neutral-700 uppercase">
+              PROTO_TYPE
+            </span>
+            <span className="font-sans text-xs font-bold tracking-[0.3em] text-neutral-400 uppercase transition-colors duration-1000"
+              style={{ color: isActive ? '#ffffff' : undefined }}
             >
-                <span className="font-mono text-[10px] tracking-[0.5em] text-neutral-600 uppercase">
-                    PROTO_TYPE
-                </span>
-                <span className="font-sans text-xs font-bold tracking-[0.3em] text-white uppercase">
-                    SYSTEMS
-                </span>
-            </motion.div>
-            <div className="flex flex-col items-end gap-1 font-mono text-[10px] text-neutral-600">
-                <span>[ 02 : DEPLOY ]</span>
-                <span className={isSystemActive ? "text-[#8effa6]" : ""}>{isSystemActive ? "ACTIVE" : "DORMANT"}</span>
-            </div>
+              SYSTEMS
+            </span>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, delay: 0.5 }}
+            className="flex flex-col items-end gap-1 font-mono text-[10px] text-neutral-700"
+          >
+            <span>[ 01 : CORE ]</span>
+            <span
+              className="transition-all duration-1000"
+              style={{ color: isActive ? '#8effa6' : undefined }}
+            >
+              {isActive ? "ACTIVE" : "DORMANT"}
+            </span>
+          </motion.div>
         </div>
 
-        {/* Brand Focal Point (Dormant-to-Active) */}
-        <LogoHero isActive={isSystemActive} />
+        {/* ── The Chip — starts dormant, activates on scroll ── */}
+        <LogoHero isActive={isActive} />
 
-        {/* Headline with cinematic spacing */}
-        <div className="relative mt-8">
-            <motion.div
-                animate={{ opacity: isSystemActive ? 1 : 0, y: isSystemActive ? 0 : 20 }}
-                transition={{ duration: 0.8 }}
-                className="font-hero text-6xl font-bold uppercase tracking-tighter md:text-7xl lg:text-8xl"
-            >
-                with a <br />
-                <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent italic">
-                    SINE of LIFE.
-                </span>
-            </motion.div>
-
-            {/* Integrated Decoder under "LIFE" */}
-            <motion.div
-                animate={{ opacity: isSystemActive ? 1 : 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 flex justify-center"
-            >
-                <div className="flex items-center gap-3 rounded-md border border-[rgba(255,255,255,0.05)] bg-[rgba(10,10,10,0.6)] px-5 py-2">
-                    <style dangerouslySetInnerHTML={{ __html: `
-                        .scramble-words::before {
-                            content: "GOVERNED.";
-                            animation: scramble_sequence 9s infinite;
-                        }
-                        @keyframes scramble_sequence {
-                            0%, 25% { content: "GOVERNED."; color: #ffffff; }
-                            26% { content: "№:0"; color: #8effa6; }
-                            27%, 58% { content: "AUTONOMOUS."; color: #ff8c42; }
-                            59% { content: "4%0%"; color: #8effa6; }
-                            60%, 91% { content: "ALIVE."; color: #8effa6; }
-                            92% { content: "#$_"; color: #ffffff; }
-                            93%, 100% { content: "GOVERNED."; color: #ffffff; }
-                        }
-                    `}} />
-                    <div className="font-mono text-[10px] tracking-[0.2em] text-neutral-600 uppercase">
-                        V_02 :
-                    </div>
-                    <div className="font-mono text-sm tracking-widest uppercase flex items-center h-4">
-                        <span className="scramble-words min-w-[120px] text-left"></span>
-                    </div>
-                </div>
-            </motion.div>
-        </div>
-
-        {/* Subheadline hook */}
+        {/* ── "with a SINE of LIFE" — fades up from below on activation ── */}
         <motion.div
-          animate={{ opacity: isSystemActive ? 1 : 0 }}
-          className="mt-12 max-w-2xl font-body text-xl text-neutral-400 md:text-2xl"
+          initial={{ opacity: 0, y: 60 }}
+          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
+          transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="relative mt-4"
+        >
+          <h1 className="font-hero text-5xl font-bold uppercase tracking-tighter md:text-6xl lg:text-7xl text-white">
+            with a{" "}
+            <br className="md:hidden" />
+            <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent italic">
+              SINE of LIFE.
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* ── Decoder bar — appears after headline ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isActive ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="mt-8 flex justify-center"
+        >
+          <div className="flex items-center gap-3 rounded-md border border-[rgba(255,255,255,0.05)] bg-[rgba(10,10,10,0.6)] px-5 py-2">
+            <style dangerouslySetInnerHTML={{ __html: `
+              .scramble-words::before {
+                content: "GOVERNED.";
+                animation: scramble_sequence 9s infinite;
+              }
+              @keyframes scramble_sequence {
+                0%, 25% { content: "GOVERNED."; color: #ffffff; }
+                26% { content: "№:0"; color: #8effa6; }
+                27%, 58% { content: "AUTONOMOUS."; color: #ff8c42; }
+                59% { content: "4%0%"; color: #8effa6; }
+                60%, 91% { content: "ALIVE."; color: #8effa6; }
+                92% { content: "#$_"; color: #ffffff; }
+                93%, 100% { content: "GOVERNED."; color: #ffffff; }
+              }
+            `}} />
+            <div className="font-mono text-[10px] tracking-[0.2em] text-neutral-600 uppercase">
+              V_02 :
+            </div>
+            <div className="font-mono text-sm tracking-widest uppercase flex items-center h-4">
+              <span className="scramble-words min-w-[120px] text-left"></span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Subheadline ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isActive ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          className="mt-10 max-w-2xl font-body text-lg text-neutral-500 md:text-xl"
         >
           <p>
             Tactical systems built to{" "}
-            <span className="text-white hover:text-[#8effa6] transition-colors">learn and execute</span>
+            <span className="text-neutral-300 hover:text-[#8effa6] transition-colors duration-500">
+              learn and execute
+            </span>
             .
           </p>
         </motion.div>
 
-        {/* Interactive "Armed/Safe" Control Panel - Positioned as an integrated sub-system */}
+        {/* ── Scroll indicator — visible only when dormant ── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-24 flex w-full max-w-3xl flex-col gap-5 overflow-hidden rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(5,5,5,0.7)] p-8 shadow-2xl backdrop-blur-2xl"
+          initial={{ opacity: 0 }}
+          animate={isActive ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ delay: 2, duration: 1 }}
+          className="absolute bottom-[12vh] left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
         >
-          <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.05)] pb-5">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleArmToggle}
-                className={`flex items-center gap-3 rounded-md px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
-                  isArmed
-                    ? "bg-[rgba(142,255,166,0.1)] text-[#8effa6] shadow-[0_0_15px_rgba(142,255,166,0.1)]"
-                    : "bg-[#1a1a1a] text-neutral-400"
-                }`}
-              >
-                {isArmed ? <ShieldAlert className="h-5 w-5" /> : <Shield className="h-5 w-5" />}
-                {isArmed ? "STATUS: ARMED" : "STATUS: SAFE"}
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <div className="h-2 w-2 rounded-full bg-neutral-800" />
-              <div className="h-2 w-2 rounded-full bg-neutral-800" />
-              <div className={`h-2 w-2 rounded-full ${isArmed ? 'bg-[#8effa6] animate-pulse shadow-[0_0_8px_#8effa6]' : 'bg-neutral-800'}`} />
-            </div>
-          </div>
-
-          {/* Terminal Output */}
-          <div className="flex h-36 flex-col justify-end overflow-hidden font-mono text-sm text-neutral-500">
-            {terminalOutput.map((line, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={line.includes("SUCCESS") || line.includes("ARMED") ? "text-[#8effa6]" : ""}
-              >
-                {line}
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Input & Action */}
-          <div className="mt-4 flex gap-4">
-            <input
-              type="text"
-              placeholder={isArmed ? "ENTER TARGET DATA NODE (PHONE / EMAIL / URL)..." : "GOVERNANCE LOCK ACTIVE - SWITCH TO ARMED"}
-              disabled={!isArmed || isDeploying}
-              value={targetPayload}
-              onChange={(e) => setTargetPayload(e.target.value)}
-              className="flex-1 rounded-md border border-[rgba(255,255,255,0.1)] bg-[#030303] px-5 py-3 font-mono text-sm text-white focus:border-[#8effa6] focus:outline-none focus:ring-1 focus:ring-[#8effa6] disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-            />
-            <ReflectiveButton
-              onClick={handleDeploy}
-              disabled={!isArmed || isDeploying || !targetPayload}
-              className={!isArmed ? "opacity-50 grayscale" : ""}
-            >
-              DEPLOY PAYLOAD
-            </ReflectiveButton>
-          </div>
+          <span className="font-mono text-[10px] tracking-[0.3em] text-neutral-600 uppercase">
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-px h-8 bg-gradient-to-b from-neutral-600 to-transparent"
+          />
         </motion.div>
       </div>
     </section>
