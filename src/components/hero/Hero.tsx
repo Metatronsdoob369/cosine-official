@@ -1,26 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { LogoHero } from "./LogoHero";
 
 export function Hero() {
   const [isActive, setIsActive] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
-
-  // Track scroll position for the activation trigger
   const { scrollY } = useScroll();
 
   useEffect(() => {
     const unsubscribe = scrollY.on("change", (latest) => {
-      // Activate at 80px of scroll — the first intentional scroll
-      if (latest > 80 && !isActive) {
-        setIsActive(true);
-      }
-      // Deactivate if they scroll back to the very top
-      if (latest < 20) {
-        setIsActive(false);
-      }
+      if (latest > 60 && !isActive) setIsActive(true);
+      if (latest < 15) setIsActive(false);
     });
     return () => unsubscribe();
   }, [scrollY, isActive]);
@@ -28,68 +20,73 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative flex min-h-[140vh] w-full flex-col items-center justify-start overflow-hidden px-4"
+      className="relative flex min-h-[130vh] w-full flex-col items-center justify-start overflow-hidden px-4"
     >
-      {/* ── Cold Open: SYSTEMS ── */}
-      <div className="flex w-full max-w-6xl flex-col items-center text-center pt-[15vh]">
-        
-        {/* Top-left system label — always visible */}
-        <div className="w-full flex justify-between items-start mb-4 px-8">
+      <div className="flex w-full max-w-5xl flex-col items-center text-center pt-[12vh]">
+
+        {/* ── Status corners ── */}
+        <div className="w-full flex justify-between items-start mb-2 px-4">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -15 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="flex flex-col items-start gap-1"
+            transition={{ duration: 1, delay: 0.2 }}
+            className="font-mono text-[10px] tracking-[0.4em] text-neutral-700 uppercase"
           >
-            <span className="font-mono text-[10px] tracking-[0.5em] text-neutral-700 uppercase">
-              PROTO_TYPE
-            </span>
-            <span className="font-sans text-xs font-bold tracking-[0.3em] text-neutral-400 uppercase transition-colors duration-1000"
-              style={{ color: isActive ? '#ffffff' : undefined }}
-            >
-              SYSTEMS
-            </span>
+            [ 01 : CORE ]
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 15 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, delay: 0.5 }}
-            className="flex flex-col items-end gap-1 font-mono text-[10px] text-neutral-700"
+            transition={{ duration: 1, delay: 0.3 }}
+            className="font-mono text-[10px] tracking-[0.4em] uppercase transition-colors duration-1000"
+            style={{ color: isActive ? '#8effa6' : '#3a3d44' }}
           >
-            <span>[ 01 : CORE ]</span>
-            <span
-              className="transition-all duration-1000"
-              style={{ color: isActive ? '#8effa6' : undefined }}
-            >
-              {isActive ? "ACTIVE" : "DORMANT"}
-            </span>
+            {isActive ? "ACTIVE" : "DORMANT"}
           </motion.div>
         </div>
 
-        {/* ── The Chip — starts dormant, activates on scroll ── */}
+        {/* ══════════════════════════════════════════════════════════
+            THE PHRASE — one coherent brand statement:
+            
+            Load:   "SYSTEMS"  (visible, the chip sits below it dormant)
+            Scroll: "with a SINE of LIFE."  (fades up, completing the sentence)
+            
+            Together they read: "SYSTEMS with a SINE of LIFE."
+           ══════════════════════════════════════════════════════════ */}
+
+        {/* Line 1: SYSTEMS — always visible */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="font-hero text-6xl font-bold uppercase tracking-tight md:text-7xl lg:text-8xl text-white mt-6"
+        >
+          SYSTEMS
+        </motion.h1>
+
+        {/* ── The Chip — dormant on load, activates on scroll ── */}
         <LogoHero isActive={isActive} />
 
-        {/* ── "with a SINE of LIFE" — fades up from below on activation ── */}
+        {/* Line 2: "with a SINE of LIFE." — fades up from below on scroll */}
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-          transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="relative mt-4"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 1.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mt-2"
         >
-          <h1 className="font-hero text-5xl font-bold uppercase tracking-tighter md:text-6xl lg:text-7xl text-white">
+          <h2 className="font-hero text-4xl font-light uppercase tracking-tight md:text-5xl lg:text-6xl text-neutral-400">
             with a{" "}
-            <br className="md:hidden" />
-            <span className="bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent italic">
+            <span className="font-bold italic bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent">
               SINE of LIFE.
             </span>
-          </h1>
+          </h2>
         </motion.div>
 
-        {/* ── Decoder bar — appears after headline ── */}
+        {/* ── Decoder bar — GOVERNED / AUTONOMOUS / ALIVE ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isActive ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.8, duration: 1 }}
+          transition={{ delay: 0.6, duration: 1 }}
           className="mt-8 flex justify-center"
         >
           <div className="flex items-center gap-3 rounded-md border border-[rgba(255,255,255,0.05)] bg-[rgba(10,10,10,0.6)] px-5 py-2">
@@ -100,11 +97,11 @@ export function Hero() {
               }
               @keyframes scramble_sequence {
                 0%, 25% { content: "GOVERNED."; color: #ffffff; }
-                26% { content: "№:0"; color: #8effa6; }
+                26% { content: "—"; color: #8effa6; }
                 27%, 58% { content: "AUTONOMOUS."; color: #ff8c42; }
-                59% { content: "4%0%"; color: #8effa6; }
+                59% { content: "—"; color: #8effa6; }
                 60%, 91% { content: "ALIVE."; color: #8effa6; }
-                92% { content: "#$_"; color: #ffffff; }
+                92% { content: "—"; color: #ffffff; }
                 93%, 100% { content: "GOVERNED."; color: #ffffff; }
               }
             `}} />
@@ -117,28 +114,12 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* ── Subheadline ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isActive ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="mt-10 max-w-2xl font-body text-lg text-neutral-500 md:text-xl"
-        >
-          <p>
-            Tactical systems built to{" "}
-            <span className="text-neutral-300 hover:text-[#8effa6] transition-colors duration-500">
-              learn and execute
-            </span>
-            .
-          </p>
-        </motion.div>
-
         {/* ── Scroll indicator — visible only when dormant ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isActive ? { opacity: 0 } : { opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
-          className="absolute bottom-[12vh] left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+          transition={{ delay: 1.8, duration: 1 }}
+          className="absolute bottom-[10vh] left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
         >
           <span className="font-mono text-[10px] tracking-[0.3em] text-neutral-600 uppercase">
             Scroll
