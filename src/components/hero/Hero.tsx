@@ -74,9 +74,9 @@ export function Hero() {
           transition={{ duration: 1.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="mt-2"
         >
-          <h2 className="font-hero text-4xl font-light uppercase tracking-tight md:text-5xl lg:text-6xl text-neutral-400">
+          <h2 className="font-hero text-4xl font-light uppercase tracking-tight md:text-5xl lg:text-6xl text-neutral-400 text-center">
             with a{" "}
-            <span className="font-bold italic bg-gradient-to-b from-white to-neutral-500 bg-clip-text text-transparent">
+            <span className="font-bold italic text-white">
               SINE of LIFE.
             </span>
           </h2>
